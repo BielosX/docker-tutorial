@@ -23,5 +23,5 @@ The `Dockerfile` in the main directory creates image with compiled tutorial.
 Just type:
 ```
 docker build . -t docker-tutorial:0.1
-docker run -d docker-tutorial:0.1
+docker run -p 8080:80 -d docker-tutorial:0.1
 ```
