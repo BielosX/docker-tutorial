@@ -9,7 +9,9 @@ dostępna jest pod adresem `Docker SDK <https://docker-py.readthedocs.io/en/stab
 Pełna dokumentacja REST API docker znajduje się pod adresem `Docker API <https://docs.docker.com/engine/api/v1.40/>`_.
 
 Domyślnie docker engine nasłuchuje na ``Unix domain socket`` (``man 7 unix`` w konsoli wyświetli dokumentacje) ``/var/run/docker.sock``.
+Dokumentacja konfiguracji docker engine znajduje się pod adresem `Dockerd socker option <https://docs.docker.com/engine/reference/commandline/dockerd/#daemon-socket-option>`_.
 Program ``curl`` pozwala na komunikacje przez tego typu gniazda.
+
 
 Przykładowo aby pobrać listę kontenerów należy wywołać polecenie:
 
