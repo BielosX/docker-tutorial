@@ -12,6 +12,8 @@ Welcome to docker-tutorial's documentation!
    wstep
    kontenervsvm
    podstawy
+   enginerestapi
+   dockercompose
 
 Indices and tables
 ==================
