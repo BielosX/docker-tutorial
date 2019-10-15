@@ -11,7 +11,9 @@ Welcome to docker-tutorial's documentation!
 
    wstep
    kontenervsvm
+   architektura
    podstawy
+   networks
    enginerestapi
    dockercompose
 
