@@ -116,3 +116,67 @@ Po uruchomieniu tego polecenia powinnien pojawić się znak zachęty narzędzia 
 Można zweryfikować, że wykonanie komendy ``redis-cli`` w kontenerze bazującym na obrazie ``redis``
 nie uruchomiło aplikacji serwerowej, a jedynie interaktywną konsolę. Zachowanie to zostanie
 szerzej omówione w rozdziale poświęconym plikom ``Dockerfile``.
+
+
+Aktywne kontenery
+```````````````````
+
+Aby wyświetlić aktualnie działające kontenery należy użyć polecenia:
+
+.. code-block:: console
+    :linenos:
+
+    docker ps
+
+Początkowo lista ta będzie pusta, próba uruchomienia kontenera poleceniem:
+
+.. code-block:: console
+    :linenos:
+
+    docker run busybox echo "Hello World"
+
+Nie spowoduje, że nowy kontener pojawi się na liście. Dzieje się tak dlatego, że kontener
+niezwłocznie kończy swoje działanie gdy działający w nim proces zakończy się. Jako, że proces ``echo`` kończy się
+od razu po wypisaniu napisu na ekranie kontener ten nie jest widoczny na liście aktywnych konteneryów.
+Aplikacje serwerowe takie jak ``redis`` widoczne są na liście gdyż po ich uruchomieniu działają nieustannie
+w trybie `foreground`. Uruchomienie kontenera ``redis`` oraz wylistowanie aktywnych kontenerów da rezultat:
+
+.. code-block:: console
+    :linenos:
+
+    CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+    ea29ff3a20f7        redis               "docker-entrypoint.s…"   12 seconds ago      Up 11 seconds       6379/tcp            sleepy_kapitsa
+
+
+Kontener w trybie detached
+````````````````````````````
+
+Jak można było zauważyć uruchomienie kontenera z serwerem ``redis`` spowodowało pojawienie się logów tej aplikacji
+na standardowym wyjściu. Aby zlecić uruchomienie kontenera w tle, tak aby nie przejmował aktywnego terminala
+należy użyć opcji ``-d`` lub ``--detach``.
+
+.. code-block:: console
+    :linenos:
+
+    docker run -d redis
+
+Wynikiem tego wywołania będzie wyświetlenie na terminalu identyfikatora uruchomionego kontenera. Jest to unikatowy identyfikator
+za pomocą którego można zarządzać kontenerem.
+
+Uruchamianie polecenia w działającym kontenerze
+`````````````````````````````````````````````````
+
+Identyfikacja kontenera
+`````````````````````````
+
+Każdy kontener posiada unikatowy identyfikator pozwalający na zarządzanie nim. Jest on widoczny w pierwszej kolumnie
+po wpisaniu polecenia listowania kontenerów. Możliwe jest również identyfikowanie kontenera za pomocą nazwy.
+Aby nadać kontenerowi nazwę należy użyć parametru ``--name`` przy uruchamianiu kontenera. Jeśli parametr
+ten nie zostanie podany Docker wygeneruje losową nazwę.
+
+Nazwa kontenera nie słóży jedynie do zarządzania nim. Jest ona używana również przez usługę DNS udostępnianą przez Docker.
+
+.. admonition:: Zadanie
+
+    Sprawdź, czy po nadaniu nazwy kontenerowi możliwe jest komunikowanie się między kontenerami za pomocą tej nazwy.
+    Sprawdź, czy z poziomu hosta możliwy jest dostęp do kontenera za pomocą nazwy.
