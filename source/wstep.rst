@@ -24,3 +24,9 @@ Rozwiązywanie konfliktów zależności
        wersjach na tym samym komputerze może być niemożliwe. Rozwiązaniem tego problemu jest separacja tych
        aplikacji i utworzenie dla nich środowiska zapewniającego, że nie będzie działała tam żadna inna aplikacja
        mogąca wywołać potencjalne konflikty.
+
+Łatwość wdrażania
+```````````````````
+
+       uruchomienie tej samej aplikacji na wielu serwerach wymaga jedynie skopiowania maszyny wirtualnej
+       lub obrazu dockera na te urządzenia. Nie ma konieczności konfigurowania każdego z osobna.
