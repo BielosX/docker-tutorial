@@ -31,7 +31,7 @@ W tym przypadku w kontenerze zostanie wykonany program ``echo`` a jego argumente
 
 Można więc zapisać składne jako:
 
-**docker run IMAGE [COMMAND] [ARG...]**
+**docker run IMAGE:[TAG] [COMMAND] [ARG...]**
 
 Zastosowana tutaj notacja oznacza, że podanie nazwy obrazu jest obowiązkowe natomiast zarówno komenda jak i jej argumenty są opcjonalne.
 Uruchomienie polecenia
@@ -44,6 +44,24 @@ Uruchomienie polecenia
 bez podania programu do wykonania jako argumentu zakończy natychmiast działanie kontenera. W kolejnych przykładach takie wywołanie
 będzie jednak bardziej przydatne.
 
+Opcjonalny parametr ``tag`` pozwala na wersjonowanie obrazu za pomocą dodatkowej informacji nazywanej tagiem.
+Tag nie jest w żaden sposób narzucony więc różne obrazy posiadają różną konwencję,
+Na przykład obraz Apache Httpd zawiera tagi:
+
+* 2.4.41
+* 2.4
+* 2
+* 2.4.41-alpine
+* 2.4-alpine
+* 2-alpine
+* alpine
+* latest
+
+Jak widać przyjęta w tym przypadku konwencja pozwala wybrać dokładną wersję httpd bądź zdecydować jedynie o major wersji.
+Tagi bez `alpine` oznaczają obrazy oparte na systemie Debian. Te zawierające `alpine` oparte sią na systemie
+Alpine Linux i cechują się małym rozmiarem.
+
+Jeśli nie zostanie wybrany żaden tag docker domyślnie uruchomi obraz z tagiem ``latest``.
 
 Uruchomienie kontenera w trybie interaktywnym
 ```````````````````````````````````````````````
