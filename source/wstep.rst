@@ -30,3 +30,9 @@ Rozwiązywanie konfliktów zależności
 
        uruchomienie tej samej aplikacji na wielu serwerach wymaga jedynie skopiowania maszyny wirtualnej
        lub obrazu dockera na te urządzenia. Nie ma konieczności konfigurowania każdego z osobna.
+
+Zarządzanie zasobami
+``````````````````````
+
+       zarówno kontenery jak i maszyny wirtualne pozwalają na deklarowanie ograniczeń związanych z zasobami
+       komputera hosta. Można więc zdefiować rozmiar wirtualnego dysku, dostępną pamięć RAM oraz wykorzystanie procesora.
