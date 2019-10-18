@@ -21,7 +21,7 @@ W systemach używających `Systemd <https://www.freedesktop.org/wiki/Software/sy
 znajduje się w ``/etc/systemd/system/multi-user.target.wants/docker.service``, domyślnie proces ten uruchamiany jest
 tylko z jednym parametrem, ``-H fd://`` który jest częścią sekwencji inicjalizacji oferowanej przez ``systemd``
 (szczegóły dostępne `Tutaj <https://stackoverflow.com/a/43408869>`_). Możliwe jest wprowadzenie zmian w tym pliku,
-bądź edytowanie ``/etc/docker/daemon.json``.
+edytowanie ``/etc/docker/daemon.json``, bądź użycie `Drop-in files <https://wiki.archlinux.org/index.php/Systemd#Drop-in_files>`_.
 
 .. warning::
     W przypadku uruchamiania dockerd przez systemd
