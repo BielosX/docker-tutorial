@@ -198,3 +198,50 @@ Nazwa kontenera nie słóży jedynie do zarządzania nim. Jest ona używana rów
 
     Sprawdź, czy po nadaniu nazwy kontenerowi możliwe jest komunikowanie się między kontenerami za pomocą tej nazwy.
     Sprawdź, czy z poziomu hosta możliwy jest dostęp do kontenera za pomocą nazwy.
+
+
+System prune
+``````````````
+
+Docker przechowuje wszystkie obrazy, kontenery, wolumeny oraz sieci. Nagromadzenie danych może powodować, że na dysku zacznie brakować miejsca.
+Aby usunąć wszystkie niepotrzebne rzeczy należy wywołać polecenie:
+
+.. code-block:: console
+    :linenos:
+
+    docker system prune
+
+Docker wyświetli informacje o konsekwencjach tego działania i zarząda powierdzenia:
+
+.. code-block:: console
+    :linenos:
+
+    WARNING! This will remove:
+    - all stopped containers
+    - all networks not used by at least one container
+    - all dangling images
+    - all dangling build cache
+
+Dodanie flagi ``--all`` wyszyści wszystkie składowane dane, zanim to się jednak stanie wyświetlana
+jest informacja o plikach które zostaną usunięte. Konieczne jest potwierdzenie chęci wykonania tej operacji:
+
+.. code-block:: console
+    :linenos:
+
+    WARNING! This will remove:
+    - all stopped containers
+    - all networks not used by at least one container
+    - all images without at least one container associated to them
+    - all build cache
+
+Polecenie ``prune`` może zostać wywołane nie tylko na całym systemie, komendy
+``container``, ``image``, ``network``, ``volume`` oferują komendę ``prune`` pozwalającą
+na wyczyszczenie tylko wskazanego zasopu. Na przykład aby wyczyścić wszystkie nieużywane
+obrazy należy wywołać polecenie:
+
+.. code-block:: console
+    :linenos:
+
+    docker image prune
+
+Dla części z tych poleceń zdefiniowana jest również flaga ``prune --all``.
