@@ -200,6 +200,54 @@ Nazwa kontenera nie słóży jedynie do zarządzania nim. Jest ona używana rów
     Sprawdź, czy z poziomu hosta możliwy jest dostęp do kontenera za pomocą nazwy.
 
 
+Cykl życia kontenera
+``````````````````````
+
+Kontener po uruchomieniu za pomocą polecenia ``docker run`` ma status ``running`` i jest widoczny na liście
+aktywnych kontenerów po wydaniu polecenia ``docker ps``.
+Wydanie polecenia:
+
+.. code-block:: console
+    :linenos:
+
+    docker kill nazwa-lub-id
+
+Powoduje wysłanie sygnału `kill` do procesu działającego w kontenerze co skutkuje zamknięciem kontenera.
+Zmienia on wtedy status na ``exited``. Aby wyświetlić wszystkie kontenery, nawet te zatrzymane
+należy wywłać polecenie:
+
+.. code-block:: console
+    :linenos:
+
+    docker ps --all
+
+lub
+
+.. code-block:: console
+    :linenos:
+
+    docker container ls --all
+
+Kontener który ma status ``exited`` może zostać ponownie uruchomiony za pomocą polecenia:
+
+.. code-block:: console
+    :linenos:
+
+    docker container start nazwa-lub-id
+
+Jeśli aplikacja działająca w zatrzymanym kontenerze zapisywała dane na dysku to
+**powinny być one widoczne** po ponownym uruchomieniu kontenera.
+
+Domyślnym zachowaniem kontenera po zatrzymaniu jest oczekiwanie na ponowne uruchomienie,
+kontener nie jest usuwany po zakończeniu działania aplikacji.
+Aby kontener usunął się automatycznie po zakończeniu działania aplikacji należy go 
+uruchomić z parametrem ``--rm``:
+
+.. code-block:: console
+    :linenos:
+
+    docker run -d --rm redis
+
 System prune
 ``````````````
 
