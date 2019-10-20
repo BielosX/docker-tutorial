@@ -19,7 +19,7 @@ alpine
 
 scratch
 `````````
-    Pusty kontener. Przydatny gdy chcemy utworzyć naprawdę mały obraz zawierający jedynie
+    Pusty obraz. Przydatny gdy chcemy utworzyć naprawdę mały obraz zawierający jedynie
     plik wykonywalny i potrzebne zależności.
 
 
