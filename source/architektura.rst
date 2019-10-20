@@ -11,8 +11,19 @@ obraz
 kontener
 ``````````
 
+Instancja procesu odseparowanego o systemu hosta wraz z przypisanym do niego systemem plików
+``read-write``. Wszystkie warstwy składające się na obraz na którym opiera się kontener
+są scalane i widoczne z poziomu kontenera. Działanie w systemie plików obrazu
+opera się na metodzie **copy-on-write**, znaczy to, że dopóki kontener
+używa plików obrazu w trybie tylko do odczytu to współdzieli ten plik
+z innymi kontenerami opartymi na tym obrazie. W przypadku pierwszej modyfikacji
+pliku udostępnianego przez obraz jest on kopiowany do systemu plików kontenera
+i tam zapisywany jako zmodyfikowany. Od tego momentu kontener pracuje
+na własnej kopii pliku.
+
 volume
 `````````
+
 
 klient-server
 ----------------
@@ -55,6 +66,12 @@ Systemy plików przechowywane są w katalogu o nazwie odpowiadającej użytemu s
 domyślnie używany obecnie system plików to ``overlay2``. Foldery ``containers`` obraz
 ``image`` zawierają baze danych obrazów oraz kontenerów. Przechowywane tam inforamcje
 to np. konfiguracja, pliki ``hostname``, ``resolv.conf`` oraz ``hosts``.
+
+.. admonition:: Zadanie
+
+    Przeprowadź test działania **copy-on-write**. Możesz użyć do tego obrazu ``ubuntu`` i zmodyfikować
+    plik ``/etc/bash.bashrc`` za pomocą programu ``vim`` (Pamiętaj o ``apt-get update && apt-get install vim``).
+    Pomocna może być komenda ``docker inspect`` oraz pole ``GraphDriver.Data``.
 
 .. admonition:: Zadanie
 
