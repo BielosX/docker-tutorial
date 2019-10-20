@@ -58,6 +58,9 @@ Można więc rozumieć odpowiedzialność ``dockerd`` jako tę związaną z baz�
 natomiast ``containerd`` jako warstwa uruchomieniowa kożystająca z funkcjonalności jądra ``Linux``
 do zapewnienia separacji.
 
+Ukazane tutaj procesy, czyli ``redis-server`` oraz ``sh`` posiadają unikatowy PID i mogą zostać
+zatrzymane z poziomu hosta za pomocą polecenia ``kill``.
+
 baza danych
 `````````````
 
