@@ -311,3 +311,24 @@ Istnieje też możliwość użycia filtra ``until`` wraz z formatem dostępnym w
     docker image prune --filter "until=1h"
 
 Uruchomienie powyższego polecenie spowoduje usunięcie obrazów starszych niż godzina.
+
+Za pomocą polecenia:
+
+.. code-block:: console
+    :linenos:
+
+    docker system df
+
+Możliwe jest wyświetlenie podsumowania ukazującego ilość zajmowanego miejsca przez kolejno: obrazy,
+kontenery, wolumeny oraz build cache.
+
+Przykładowy wynik wywołania tego polecenia:
+
+.. code-block:: console
+    :linenos:
+
+    TYPE                TOTAL               ACTIVE              SIZE                RECLAIMABLE
+    Images              4                   2                   145.8MB             144.2MB (98%)
+    Containers          2                   0                   481.8kB             481.8kB (100%)
+    Local Volumes       0                   0                   0B                  0B
+    Build Cache         0                   0                   0B                  0B
