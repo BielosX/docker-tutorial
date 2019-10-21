@@ -40,3 +40,14 @@ scratch
                 <strong>docker-tutorial</strong>
             </body>
         </html>
+
+Wydanie polecenia:
+
+.. code-block:: console
+    :linenos:
+
+    docker image history IMAGE_ID:IMAGE_TAG
+
+pozwala na wyświetlenie warstw składających się na obraz. W polu *CREATED_BY* wyświetlone
+jest polecenie które wygenerowało konkretną warstwe. Dodanie flagi ``--no-trunc`` spowoduje,
+że polecenia znajdujące się w polu *CREATED_BY* nie będą skracane.
