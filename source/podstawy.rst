@@ -293,3 +293,21 @@ obrazy należy wywołać polecenie:
     docker image prune
 
 Dla części z tych poleceń zdefiniowana jest również flaga ``prune --all``.
+Istnieje też możliwość filtrowania obrazów, kontenerów lubi sieci przy usuwaniu
+za pomocą komendy ``prune``. Filtr `until` pozwala usunąć wszystkie przechowywane
+dane według kryterium czasu stworzenia.
+
+.. code-block:: console
+    :linenos:
+
+    docker image prune --filter "until=2019-10-21"
+
+Powyższe polecenie spowoduje usunięcie obrazów utworzonych przed dniem 21.10.2019
+Istnieje też możliwość użycia filtra ``until`` wraz z formatem dostępnym w języku Go oznaczającym czas trwania:
+
+.. code-block:: console
+    :linenos:
+
+    docker image prune --filter "until=1h"
+
+Uruchomienie powyższego polecenie spowoduje usunięcie obrazów starszych niż godzina.
