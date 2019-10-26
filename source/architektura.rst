@@ -24,6 +24,49 @@ na własnej kopii pliku.
 volume
 `````````
 
+Separacja kontenerów
+----------------------
+
+Docker jest ściśle powiązany z systemem Linux i używa dostarczanych przez niego narzędzi takich jako
+`namespaces` oraz `cgrups` do izolowania procesu działającego w kontenerze od innych procesów działających w systemie hosta.
+
+
+namespaces
+````````````
+
+Narzędzie pozwalające na tworzenie wyizolowanych zasobów dla procesu. Przy tworzeniu nowego procesu za pomocą
+wywołania systemowego ``clone`` (``man 2 clone``) istnieje możliwość określenia konkretnych przestrzeni nazw w których
+będzie działał proces. Istnieje również możliwość włączenia procesu do istniejącej przestrzeni nazw za pomocą
+funkcje ``setns`` (``man 2 setns``) lub przeniesienie działającego procesu do nowej przestrzeni nazw za pomocą
+funkcji systemowej ``unshare`` (``man 2 unshare``). 
+
+Linux udostępnia następujące przestrzenie nazw:
+
+pid_namespaces
+    Izolacja identyfikatorów procesów. Oznacza to, że procesy znajdujące się w różnych
+    *pid_namespaces* mogą posiadać ten sam identyfikator procesu. Pierwszy proces utworzony
+    w nowej przestrzeni nazw otrzymuje PID 1 i staje się rodzicem wszystkich osieroconych
+    procesów działających w tej przestrzeni nazw.
+
+mount_namespace
+    Izoluje liste zamontowanych systemów plików widocznych przez procesy znajdujące się w tej przestrzeni nazw.
+    Modyfikacje zamontowanych systemów plików za pomocą wywołań systemowych ``mount`` i ``umount``
+    nie zmodyfikują zamontowanych systemów plików w innych przestrzeniach nazw.
+
+network_namespace
+    Izoluje zasoby systemowe związane z sieciami: urządzenia, tablice routingu, regóły firewalla, stos IPv4 i IPv6.
+
+user_namespaces
+    Izoluje identyfatory użytowników i grup, katalog ``root``.
+
+Pełna lista dostępna za pomocą polecenia ``man 7 namespaces``.
+
+cgroups
+`````````
+
+Control groups, pozwala zorganizować procesy w hierarchię umożliwiającą ograniczanie i monitorowanie
+zasobów takich jak pamięć czy CPU.
+
 
 klient-server
 ----------------
