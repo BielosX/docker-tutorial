@@ -332,3 +332,35 @@ Przykładowy wynik wywołania tego polecenia:
     Containers          2                   0                   481.8kB             481.8kB (100%)
     Local Volumes       0                   0                   0B                  0B
     Build Cache         0                   0                   0B                  0B
+
+
+Uruchamienia procesu w działającym kontenerze
+```````````````````````````````````````````````
+
+Istnieje możliwość uruchomienia polecenia w już działającym kontenerze za pomocą polecenia ``exec``:
+
+.. code-block:: console
+    :linenos:
+
+    docker run -d postgres
+
+.. code-block:: console
+    :linenos:
+
+    docker exec <container-id> cat /var/lib/postgresql/data/postgresql.conf
+
+Polecenie ``exec`` pozwala również uruchomić program w trybie interaktywnym. Jest to przydatne
+np. gdy chcemy połączyć się do bazy danych działającej w kontenerze za pomocą narzędzi
+dostępnych w jej pakiecie.
+
+.. code-block:: console
+    :linenos:
+
+    docker exec -it a3871a91ebc9 psql -U postgres
+
+Możliwe jest również wywołanie ``/bin/bash`` i przeglądanie oraz modyfikacja zawartości systemu plików kontenera.
+
+.. admonition:: Zadanie
+
+    Uruchom kontener z aplikacją ``redis`` następnie zaloguj się do serwera za pomocą polecenia ``exec`` i ``redis-cli``.
+    Jaki adres IP jest wyświetlany w konsoli oraz po wydaniu polecenia ``client list``?

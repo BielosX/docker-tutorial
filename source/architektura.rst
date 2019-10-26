@@ -46,7 +46,8 @@ pid_namespaces
     Izolacja identyfikatorów procesów. Oznacza to, że procesy znajdujące się w różnych
     *pid_namespaces* mogą posiadać ten sam identyfikator procesu. Pierwszy proces utworzony
     w nowej przestrzeni nazw otrzymuje PID 1 i staje się rodzicem wszystkich osieroconych
-    procesów działających w tej przestrzeni nazw.
+    procesów działających w tej przestrzeni nazw. **Jeśli proces o PID 1 w namespace
+    zostanie zatrzymany kernel zatrzymuje wszystkie procesy w tym namespace**.
 
 mount_namespace
     Izoluje liste zamontowanych systemów plików widocznych przez procesy znajdujące się w tej przestrzeni nazw.
