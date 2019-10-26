@@ -1,0 +1,3 @@
+Sphinx==1.8.5
+sphinx_glpi_theme
+sphinx_copybutton
