@@ -394,7 +394,7 @@ Jest to przydatne np. gdy chcemy używać programu narzędziowego (np. GCC) znaj
     Utwórz katalog a w nim prosty program w języku C:
 
     .. code-block:: C
-    :linenos:
+        :linenos:
 
         #include <stdio.h>
 
@@ -403,10 +403,10 @@ Jest to przydatne np. gdy chcemy używać programu narzędziowego (np. GCC) znaj
             return 0;
         }
 
-    Następnie będąc w tym katalogu wywołaj polecenie (parametr ``--mount`` zostanie omówiony późńiej):
+    Następnie będąc w tym katalogu wywołaj polecenie (parametr ``--mount`` zostanie omówiony później):
 
     .. code-block:: console
-    :linenos:
+        :linenos:
 
         docker create --name my-gcc --mount type=bind,src=$PWD,dst=/workdir gcc:9 gcc -o /workdir/main /workdir/main.c
         docker start my-gcc
@@ -414,3 +414,10 @@ Jest to przydatne np. gdy chcemy używać programu narzędziowego (np. GCC) znaj
     Zmodyfikuj kod programu tak, aby wymagał ponownej kompilacji następnie skompiluj i uruchom.
 
     Wprowadź błąd do programu, następnie uruchom proces kompilacji. Czy błąd jest widoczny na ekranie?
+
+
+attach i interactive
+----------------------
+
+Możliwe jest dołączenie ``STDIN`` do uruchamianego kontenera za pomocą parametru ``--interactive`` bądź ``-i``
+polecenia ``docker start``, jak również dołączenie ``STDOUT`` oraz ``STDERR`` za pomocą parametru ``--attach`` lub ``-a``.
