@@ -356,7 +356,7 @@ dostępnych w jej pakiecie.
 .. code-block:: console
     :linenos:
 
-    docker exec -it a3871a91ebc9 psql -U postgres
+    docker exec -it <container-id> psql -U postgres
 
 Możliwe jest również wywołanie ``/bin/bash`` i przeglądanie oraz modyfikacja zawartości systemu plików kontenera.
 
@@ -364,3 +364,53 @@ Możliwe jest również wywołanie ``/bin/bash`` i przeglądanie oraz modyfikacj
 
     Uruchom kontener z aplikacją ``redis`` następnie zaloguj się do serwera za pomocą polecenia ``exec`` i ``redis-cli``.
     Jaki adres IP jest wyświetlany w konsoli oraz po wydaniu polecenia ``client list``?
+
+
+Logs
+``````
+
+Domyślne działanie polecenia ``logs`` polega na wyświetleniu ``STDOUT`` oraz ``STDERR`` działającego kontenera:
+
+
+.. code-block:: console
+    :linenos:
+
+    docker logs <container-id>
+
+Jeśli aplikacja działająca w kontenerze nie wyświetla logów na standardowym wyjściu nadal możliwe jest ich
+przeglądanie za pomocą polecenia ``exec``, konieczne wtedy jest uruchomienie ``/bin/bash`` lub
+programów takich jak ``cat`` i odnalezienie pliku do którego aplikacja ta zapisuje logi.
+
+
+Create i Start
+````````````````
+
+Istnieje możliwość utworzenia kontenera lecz nie uruchamiania go, słóży do tego polecenie ``docker create``.
+Następnie można uruchomić kontener za pomocą polecenia ``docker start``.
+Jest to przydatne np. gdy chcemy używać programu narzędziowego (np. GCC) znajdującego się w kontenerze.
+
+.. admonition:: Zadanie
+
+    Utwórz katalog a w nim prosty program w języku C:
+
+    .. code-block:: C
+    :linenos:
+
+        #include <stdio.h>
+
+        int main(void) {
+            printf("Hello World!\n");
+            return 0;
+        }
+
+    Następnie będąc w tym katalogu wywołaj polecenie (parametr ``--mount`` zostanie omówiony późńiej):
+
+    .. code-block:: console
+    :linenos:
+
+        docker create --name my-gcc --mount type=bind,src=$PWD,dst=/workdir gcc:9 gcc -o /workdir/main /workdir/main.c
+        docker start my-gcc
+
+    Zmodyfikuj kod programu tak, aby wymagał ponownej kompilacji następnie skompiluj i uruchom.
+
+    Wprowadź błąd do programu, następnie uruchom proces kompilacji. Czy błąd jest widoczny na ekranie?
