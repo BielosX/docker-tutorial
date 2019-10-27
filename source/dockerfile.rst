@@ -148,3 +148,14 @@ Wydanie polecenia:
 pozwala na wyświetlenie warstw składających się na obraz. W polu *CREATED_BY* wyświetlone
 jest polecenie które wygenerowało konkretną warstwe. Dodanie flagi ``--no-trunc`` spowoduje,
 że polecenia znajdujące się w polu *CREATED_BY* nie będą skracane.
+
+
+Uruchamianie polecenia
+----------------------
+
+.. warning::
+    Niektóre managery pakietów (np. ``apt-get``) domyślnie wymagają potwierdzenia chęci zainstalowania pakietu
+    oczekując na naciśnięcie odpowiedniego klawisza. W przypadku uruchamiania takiego managera pakietów
+    za pomocą polecenia ``RUN`` należy się upewnić, że został on uruchomiony z odpowiednim przełącznikiem
+    informującym manager, że jesteśmy pewni swojej decyzji. Wyświetlenie pytania może przerwać proces budowania.
+    W przypadku ``apt-get`` są to przełączniki ``-y``, ``--yes`` oraz ``--assume-yes``.
