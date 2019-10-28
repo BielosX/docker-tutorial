@@ -24,6 +24,61 @@ na własnej kopii pliku.
 volume
 `````````
 
+OverlayFS
+---------
+
+Jak sama nazwa wskazuje `OverlayFS` (overlay: eng. nakładać) jest systemem plików umożliwającym
+składanie wielu systemów plików tak aby były widoczne jako jeden. `OverlayFS` definiuje pojęcia takie jak
+`UpperDir`, `LowerDir` oraz `Merged`. `LowerDir` jest systemem plików, lub systemami plików
+które łączone są w jeden system **tylko do odczytu**, jeśli jakiś plik istnieje na wielu zdefiniowanych
+warstwach to kolejność ich definicji mówi, z której warstwy zostanie pobrany dany plik.
+`UpperDir` reprezentuje system plików **read write**, każda zmiana plików udostępnianych przez dolne warstwy
+będzie kopiowana do tej warstwy. Równierz tworzenie nowych plików będzie miało miejsce na tej
+warstwie i nie spowoduje zmian w warstwach zdefiniowanych jako `LowerDir`.
+`Merged` jest wynikiem połączenia `LowerDir` i `UpperDir` i przedstawia spójny system plików.
+
+Doker wykorzystuje ``OverlayFS`` do tworzenia kontenerów. Przy uruchamianiu aplikacji w kontenerze
+warstwy składające się na obraz bazowy montowane są jako `LowerDir` natomiast przestrzeń
+**read write** zarezerwowana dla kontenera montowana jest jako `UpperDir`, następnie
+kontener uruchamiany jest z zamontowanym katalogiem ``/`` wskazującym na katalog ``Merged``.
+
+Aby zamontować system plików ``OverlayFS`` należy wydać polecenie:
+
+.. code-block:: console
+    :linenos:
+
+    mount -t overlay overlay -o lowerdir=/lower1:/lower2:/lower3,upperdir=/upper,workdir=/work /merged
+
+Efektem tego będzie system plików składający się z następujących warstw:
+
+.. code-block:: console
+    :linenos:
+
+    /upper
+    /lower1
+    /lower2
+    /lower3
+
+Warstwy wyspecyfikowane w parametrze ``lowerdir`` będą występowały w kolejności od prawej do lewej.
+Oznacza to, że jeśli na warstwie ``/lower3`` znajduje się plik ``test.txt`` który występuje również
+na warstwie ``/lower2`` to wersja tego pliku widoczna w katalogu ``/merged`` będzie pochodziła z warstwy ``/lower2``.
+Katalog zdefiniowany opcją ``workdir`` jest niezbędny i dokumentacja opisuje go następująco:
+
+.. code-block:: console
+    :linenos:
+
+    The workdir option is required, and used to prepare files before they areswitched
+    to the overlay destination in an atomic action (the workdir needs to be on the same filesystem as the upperdir).
+
+
+Jak widać warstwy oraz obrazy oferowane przez docker mogą być w pełni realizowane przez sterownik OverlayFS.
+Docker przy uruchamianiu kontenera wyszukuje w swojej bazie danych informacji o obrazie na bazie którego
+ma powstać kontener, następnie wszystkie warstwy obrazu montowane są jako `LowerDir` a specjalnie
+utworzony na potrzeby kontenera katalog jako `UpperDir`, zapewnia to separacje kontenera od innych
+bazujących na tym samym obrazie, gdyż z definicji `LowerDir` jest *read-only*, nie ma więc możliwości, że
+dwa kontenery bazujące na tym samym obrazie nadpiszą sobie jakiś plik. Zmiany w ich plikach będą widoczne
+jedynie w ich `UpperDir` do których inne kontenery nie będą miały dostępu.
+
 Separacja kontenerów
 ----------------------
 
@@ -108,25 +163,30 @@ zatrzymane z poziomu hosta za pomocą polecenia ``kill``.
 baza danych
 `````````````
 
-Wszystkie dane zarządzane przez ``dockerd`` w tym obrazy i kontenery znajdują się w ``/var/lib/docker``.
-Systemy plików przechowywane są w katalogu o nazwie odpowiadającej użytemu systemowi plików,
-domyślnie używany obecnie system plików to ``overlay2``. Foldery ``containers`` obraz
-``image`` zawierają baze danych obrazów oraz kontenerów. Przechowywane tam inforamcje
-to np. konfiguracja, pliki ``hostname``, ``resolv.conf`` oraz ``hosts``.
+.. hint::
+    Wszelkie wpisy formatu ``JSON`` znajdujące się w bazie danych docker są przechowywane w wersji pozbawionej
+    znaków odstępu. Aby wyświetlać je w czytelny sposób używaj polecenia ``python -m json.tool`` np.
+    ``cat repositories.json | python -m json.tool``.
+
+Jak opisano wocześniej Docker wykorzystuje system plików ``OverlayFS`` do współdzielenia obrazów
+oraz zapewnienia separacji między systemami plików poszczególnych kontenerów. Stosuje on również
+dostępne w systemie Linux narzędzia takie jak `namespaces` i `cgroups` do zapewnienia
+separacji w trakcie wykonania procesu. Głównym zadaniem ``dockerd`` oraz pomocniczych usług jest
+więc zarządzanie bazą danych obrazów i kontenerów. Baza danych programu docker znajduje się w katalogu
+``/var/lib/docker``. Uruchomienie nowego kontenera przebiega następująco:
+
+1. Znalezienie wpisu dotyczącego obrazu bazowego w pliku ``image/overlay2/repositories.json``.
+2. Jeśli wybrany obraz znajduje się w tym pliku pobierana jest wartość skrótu ``sha256``, jeśli nie ma takiego obrazu następuje próba pobrania go.
+3. Plik zawierający liste warstw składających się na obraz znajduje się w ``image/overlay2/imagedb/content/sha256``, jego nazwa odpowiada pobranemu wcześniej skrótowi, plik ten jest formatu ``JSON``.
+4. Warstwy składające się na obraz znajdują się na liście ``rootfs.diff_ids``, należy pobrać całą liste.
+5. Opisu warstw należy szukać w ``image/overlay2/layerdb/sha256``, zawarte tam katalogi zawierają plik ``diff`` którego wartość jest taka sama jak ``diff_ids`` pobrane z opisu obrazu.
+6. Ustalenie relacji między warstwami jest możliwe dzięki plikowi ``parent`` znajdującym się w tym samym katalogu co plik ``diff``.
+7. W każdym katalogu zawierającym pliki ``diff`` znajduje się plik ``cache-id``, zawartość tego pliku zawiera identyfikator systemu plików danej warstwy. Pliki składające się na daną warstwe przechowywane są w folderze ``/var/lib/docker/overlay2`` w katalogu którego nazwa odpowiada uzyskanemu wcześniej ``cache-id``
 
 .. admonition:: Zadanie
 
-    Przeprowadź test działania **copy-on-write**. Możesz użyć do tego obrazu ``ubuntu`` i zmodyfikować
-    plik ``/etc/bash.bashrc`` za pomocą programu ``vim`` (Pamiętaj o ``apt-get update && apt-get install vim``).
-    Pomocna może być komenda ``docker inspect`` oraz pole ``GraphDriver.Data``.
-
-.. admonition:: Zadanie
-
-    Uwtórz w systemie plików nowego kontenera plik tekstowy a nastepnie zlokalizuj
-    go w ``/var/lib/docker`` (np. za pomocą narzędzi ``find`` lub ``grep``)
-
-    Na potrzeby tego zadania uruchom interaktywny terminal poleceniem:
-    ``docker run -it busybox sh``
+    Zamontuj system plików ``OverlayFS`` składający się ze wszystkich warstw wybranego obrazu oraz nowej warstwy `UpperDir`,
+    utwórz w nim nowy plik i zweryfikuj, czy zmiany te widoczne są w dolnych warstwach.
 
 komunikacja z daemonem
 ````````````````````````
