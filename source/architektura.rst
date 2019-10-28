@@ -8,6 +8,9 @@ Podstawowe pojęcia
 obraz
 ```````
 
+System plików **tylko do odczytu** który może być współdzielony przez wiele kontenerów.
+Zawiera strukture katalogów oraz biblioteki niezbędne do działania wybraniego programu.
+
 kontener
 ``````````
 
@@ -23,6 +26,17 @@ na własnej kopii pliku.
 
 volume
 `````````
+
+System plików zarządzanyc przez docker. Pozwala na montowanie w systemach plików kontenerów dzięki
+czemu możliwe jest przechowywanie danych wygenerowanych przez kontener nawet jeśli ten zakończy swoje działanie.
+
+warstwa
+`````````
+
+System plików **tylko do odczytu** będący składową obrazu. Obraz może składać się z wielu warstw i mają
+one określoną hierarchię. Każda warstwa zawiera jedynie różnice względem poprzedniej warstwy, następnie
+przy uruchamianiu kontenera wszystkie warstwy składające się na obraz są scalane.
+Warstwy mogą być współdzielone między obrazami.
 
 OverlayFS
 ---------
@@ -180,8 +194,38 @@ więc zarządzanie bazą danych obrazów i kontenerów. Baza danych programu doc
 3. Plik zawierający liste warstw składających się na obraz znajduje się w ``image/overlay2/imagedb/content/sha256``, jego nazwa odpowiada pobranemu wcześniej skrótowi, plik ten jest formatu ``JSON``.
 4. Warstwy składające się na obraz znajdują się na liście ``rootfs.diff_ids``, należy pobrać całą liste.
 5. Opisu warstw należy szukać w ``image/overlay2/layerdb/sha256``, zawarte tam katalogi zawierają plik ``diff`` którego wartość jest taka sama jak ``diff_ids`` pobrane z opisu obrazu.
-6. Ustalenie relacji między warstwami jest możliwe dzięki plikowi ``parent`` znajdującym się w tym samym katalogu co plik ``diff``.
-7. W każdym katalogu zawierającym pliki ``diff`` znajduje się plik ``cache-id``, zawartość tego pliku zawiera identyfikator systemu plików danej warstwy. Pliki składające się na daną warstwe przechowywane są w folderze ``/var/lib/docker/overlay2`` w katalogu którego nazwa odpowiada uzyskanemu wcześniej ``cache-id``
+6. Nazwy katalogów w ``image/overlay2/layerdb/sha256`` nie odpowiadają wpisom na liście ``rootfs.diff_ids`` (poza pierwszym elementem na liście) lecz są haszem złączenia dwóch lub więcej identyfikatorów. Tak więc identyfikator drugiej warstwy to sha256(diff_ids[0] + " " + diff_ids[1])
+7. Ustalenie relacji między warstwami jest możliwe dzięki plikowi ``parent`` znajdującym się w tym samym katalogu co plik ``diff``.
+8. W każdym katalogu zawierającym pliki ``diff`` znajduje się plik ``cache-id``, zawartość tego pliku zawiera identyfikator systemu plików danej warstwy. Pliki składające się na daną warstwe przechowywane są w folderze ``/var/lib/docker/overlay2`` w katalogu którego nazwa odpowiada uzyskanemu wcześniej ``cache-id``
+
+
+Przykładowo pewien obraz zawiera trzy warstwy:
+.. code-block:: json
+    :linenos:
+
+    "diff_ids": [
+        "sha256:788fd6a5f6fe8c87cd7eeb84d1049bfb2f74a68c6ffa58e83ed862dbd99de7d8",
+        "sha256:684e32911114621cc2997ff125592aa8d76924cd3d38691cee0dc9b60d43bdbc",
+        "sha256:8cecea3fcdfda4e292b90a8bb97bb4a44bfa11229960f63c8dff0faf93b1f155"
+    ]
+
+Idpowiadające im foldery w ``/var/lib/docker/image/overlay2/layerdb/sha256`` to:
+
+.. code-block:: json
+    :linenos:
+
+    sha256:788fd6a5f6fe8c87cd7eeb84d1049bfb2f74a68c6ffa58e83ed862dbd99de7d8: 788fd6a5f6fe8c87cd7eeb84d1049bfb2f74a68c6ffa58e83ed862dbd99de7d8
+    sha256:684e32911114621cc2997ff125592aa8d76924cd3d38691cee0dc9b60d43bdbc: sha256(diff_ids[0] + " " + diff_ids[1])
+    sha256:8cecea3fcdfda4e292b90a8bb97bb4a44bfa11229960f63c8dff0faf93b1f155: sha256(diff_ids[0] + " " + diff_ids[1] + " " + diff_ids[2])
+
+Polecenie:
+
+.. code-block:: json
+    :linenos:
+
+    echo -n "sha256:788fd6a5f6fe8c87cd7eeb84d1049bfb2f74a68c6ffa58e83ed862dbd99de7d8 sha256:684e32911114621cc2997ff125592aa8d76924cd3d38691cee0dc9b60d43bdbc" | sha256sum
+
+Daje wynik ``481fd744cb91ad733902c364637ac80de75653c927865f8e8a305c98bd41aaea`` i dokładnie taki katalog znajdzie się w ``/var/lib/docker/image/overlay2/layerdb/sha256``.
 
 .. admonition:: Zadanie
 
