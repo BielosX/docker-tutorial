@@ -1,5 +1,0 @@
-FROM openjdk:8-jre-alpine3.9
-
-COPY build/libs/gradle-docker-all.jar /app/gradle-docker-all.jar
-CMD ["java", "-jar", "/app/gradle-docker-all.jar"]
-
