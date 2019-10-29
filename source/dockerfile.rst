@@ -159,3 +159,137 @@ Uruchamianie polecenia
     za pomocą polecenia ``RUN`` należy się upewnić, że został on uruchomiony z odpowiednim przełącznikiem
     informującym manager, że jesteśmy pewni swojej decyzji. Wyświetlenie pytania może przerwać proces budowania.
     W przypadku ``apt-get`` są to przełączniki ``-y``, ``--yes`` oraz ``--assume-yes``.
+
+
+Multistage build
+----------------
+
+Każda warstwa utworzona za pomocą komend w Dockerfile może znacząco zwiększyć rozmiar obrazu wynikowego.
+Często jest tak, że narzędzia potrzebne do zbudowania aplikacji nie są potrzebne do jej uruchomienia,
+pozostawienie niepotrzebnych aplikacji niezbędnych przy procesie budowania w obrazie wynikowym
+spowodowałoby znaczny wzrost jego rozmiaru. Rozwiązań tego problemu jest kilka:
+
+1. Stworzenie skryptu np. w ``bash`` uruchamiającego kontener z kompilatorem oraz zamontowanym folderem zawierającym źródła oraz folderem wynikowym. Następnie skrypt ten uruchamiałby budowanie Dockerfile kopiującego program wykonywalny z folderu wynikowego do nowego obrazu.
+2. Stowrzenie skryptu tworzącego kontener i kopiującego za pomocą ``docker container cp`` źródła, następnie uruchamiającego kompilator i po etapie kompilacji kopiującego z kontenera program wynikowy który następnie zostanie użyty przy budowaniu obrazu za pomocą Dockerfile.
+3. Zastosowanie ``Multistage build`` i etapów pośrednich których wygenerowane warstwy nie będą składowymi ostatecznego obrazu.
+
+Multistage build pozwala na definiowanie wielu poleceń ``FROM`` a następnie kopiowanie wyników działania komend
+do kolejnego etapu budowania, wygląda to następująco:
+
+
+.. code-block:: dockerfile
+    :linenos:
+
+    FROM alpine:3.10.3
+    RUN echo "test" > test.txt
+
+    FROM busybox
+    COPY --from=0 test.txt /tmp/test.txt
+
+Istnieje możliwość nadawania nazw kolejnym etapom budowania i odwoływania się do nich za pomocą flagi ``--from``:
+
+.. code-block:: dockerfile
+    :linenos:
+
+    FROM alpine:3.10.3 AS awesome
+    RUN echo "test" > test.txt
+
+    FROM busybox
+    COPY --from=awesome test.txt /tmp/test.txt
+
+.. admonition:: Zadanie
+
+    Utwórz plik Dockerfile budujący następujący kod java za pomocą JDK:
+
+    .. code-block:: java
+        :linenos:
+
+        public class Hello {
+            public static void main(String[] args) {
+                System.out.println("Hello World");
+            }
+        }
+
+    Niech obraz wynikowy uruchamiający aplikacje nie zawiera narzędzi do budowania.
+    (Dodatkowe punkty za Gradle z application plugin, ``gradle init --type java-application``).
+
+
+CMD i ENTRYPOINT
+----------------
+
+Polecenie ``CMD`` pozwala określić **domyślne** polecenie wykonywane w kontenerze.
+Jego działanie można zaobserwować na przykładzie obrazu ``redis``:
+
+.. code-block:: console
+    :linenos:
+
+    docker run redis
+
+Wywołanie tego polecenie spowoduje uruchomienie kontenera z działającym serwerem `redis`. W jego Dockerfile
+program serwera został zdefiniowany w poleceniu ``CMD``, nic nie stoi jednak na przeszkodzie uruchomić obraz
+``redis`` w następujący sposób:
+
+.. code-block:: console
+    :linenos:
+
+    docker run -it redis /bin/bash
+
+Spowoduje to uruchomienie aplikacji ``/bin/bash`` w kontenerze, lecz serwer ``redis`` **nie zostanie uruchomiony**.
+``CMD`` wskazuje tu na domyślną aplikacje, lecz nie zabrania uruchomienia innej, dostępnej w obrazie.
+
+
+Polecenie ``ENTRYPOINT`` mimo, że również pozwala określić proces, który zostanie uruchomiony w kontenerze
+nie daje możliwości uruchomienia innego programu. Zamiast tego wszystkie parametry następującej
+po nazwie obrazu przy uruchamianiu zostają przekazane do tej aplikacji.
+
+Przykładowo mając plik Dockerfile na podstawie którego powstał obraz ``my-java``:
+
+.. code-block:: dockerfile
+    :linenos:
+
+    FROM openjdk:8-jre-alpine
+    ENTRYPOIN ["java"]
+
+Uruchomienie aplikacji za pomocą:
+
+.. code-block:: console
+    :linenos:
+
+    docker run my-java --help
+
+Spowoduje przekazanie parametru ``--help`` do programu ``java``.
+``ENTRYPOINT`` jest więc przydatny do budowania obrazów z programami narzędziowymi takimi jak kompilatory,
+gdyż pozwala to na zdefiniowanie niezmiennej aplikacji która zostanie uruchomiona w kontenerze
+wraz z niezbędnymi flagami która następnie zostanie uruchomiona z odpowiednimi parametrami.
+
+Przykładowo można zdefiniować Dockerfile dla kompilatora GCC generujący obraz ``my-gcc`` w następujący sposób:
+
+.. code-block:: dockerfile
+    :linenos:
+
+    FROM gcc:9
+    ENTRYPOINT ["gcc", "-g", "-O3"]
+
+Każde uruchomienie kontenera z tym kompilatorem wywoła go z opcjami ``-g`` (symbole debugowania) oraz ``-O3`` (optymalizacja).
+Wywołanie:
+
+.. code-block:: console
+    :linenos:
+
+    docker run my-gcc -o /out/main main.c
+
+Co spowoduje w rzeczywistości wywołanie polecenia:
+
+.. code-block:: console
+    :linenos:
+
+    gcc -g -O3 -o /out/main main.c
+
+
+Argumenty budowania
+-------------------
+
+Istnieje możliwość zdefiniowania stałych możliwych do podania przy wywołaniu ``docker build`` jak również nadanie im domyślych wartości,
+słóży do tego polecenie ``ARG``.
+
+``ARG`` może zostać następnie użyte za pomocą odwołania z symbolem dolara.

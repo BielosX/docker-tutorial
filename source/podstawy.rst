@@ -421,3 +421,28 @@ attach i interactive
 
 Możliwe jest dołączenie ``STDIN`` do uruchamianego kontenera za pomocą parametru ``--interactive`` bądź ``-i``
 polecenia ``docker start``, jak również dołączenie ``STDOUT`` oraz ``STDERR`` za pomocą parametru ``--attach`` lub ``-a``.
+
+
+container cp
+------------
+
+Istnieje możliwość przekopiowania plików i folderów z systemu hosta do kontenera, zarówno działającego jak i
+dopiero utworzonego. Słóży do tego polecenie ``docker container cp``. Może to być przydatne do zapewnienia,
+że odpowiedni plik konfiguracyjny znajdzie się w kontenerze przed jego uruchomieniem.
+Istnieje także możliwość kopiowania plików z kontenera.
+
+Możliwe jest równierz używanie tego polecenia wraz z tak zwanymi `Docker Data Containers`.
+Są to stworzone kontenery w których nie został uruchomiony proces bądź proces skończył swoje działanie.
+
+Przykładem może być kompilator programu w języku C opisany w poprzednim zadaniu,
+skrypt ``bash`` budujący plik ``main.c`` mógłby wyglądać następująco:
+
+.. code-block:: console
+    :linenos:
+
+    docker container rm my-gcc
+    docker create --name my-gcc gcc:9 gcc -o /main /main.c
+    docker cp main.c my-gcc:/main.c
+    docker start -a my-gcc
+    mkdir -p out
+    docker cp my-gcc:/main out/main
