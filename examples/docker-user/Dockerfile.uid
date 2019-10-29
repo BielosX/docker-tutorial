@@ -1,0 +1,3 @@
+FROM debian:buster
+RUN useradd -u 1000 -m my-user
+USER my-user

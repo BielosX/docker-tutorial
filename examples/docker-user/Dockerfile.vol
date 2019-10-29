@@ -1,0 +1,5 @@
+FROM debian:buster
+RUN mkdir /abc
+RUN useradd -m my-user && chown -R my-user /abc
+USER my-user
+VOLUME /abc
