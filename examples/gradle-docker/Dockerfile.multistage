@@ -1,0 +1,8 @@
+FROM gradle:5.6.3-jdk8 as builder
+COPY . /workspace
+WORKDIR /workspace
+RUN gradle shadowJar
+
+FROM openjdk:8-jre-alpine3.9
+COPY --from=builder /workspace/build/libs/gradle-docker-all.jar /app/gradle-docker-all.jar
+CMD ["java", "-jar", "/app/gradle-docker-all.jar"]
