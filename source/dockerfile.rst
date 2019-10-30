@@ -197,6 +197,7 @@ Istnieje możliwość nadawania nazw kolejnym etapom budowania i odwoływania si
     FROM busybox
     COPY --from=awesome test.txt /tmp/test.txt
 
+
 .. admonition:: Zadanie
 
     Utwórz plik Dockerfile budujący następujący kod java za pomocą JDK:

@@ -2,7 +2,7 @@ from alpine:3.10.2 as builder
 
 run apk add --no-cache py3-setuptools make && \
     pip3 install --upgrade pip && \
-    pip3 install -U sphinx && \
+    pip3 install -U sphinx==1.8.5 && \
     pip3 install -U sphinx_glpi_theme && \
     pip3 install -U sphinx-copybutton
 copy . /sphinx-proj

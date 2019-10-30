@@ -200,7 +200,8 @@ więc zarządzanie bazą danych obrazów i kontenerów. Baza danych programu doc
 
 
 Przykładowo pewien obraz zawiera trzy warstwy:
-.. code-block:: json
+
+.. code-block:: console
     :linenos:
 
     "diff_ids": [
@@ -211,7 +212,7 @@ Przykładowo pewien obraz zawiera trzy warstwy:
 
 Idpowiadające im foldery w ``/var/lib/docker/image/overlay2/layerdb/sha256`` to:
 
-.. code-block:: json
+.. code-block:: console
     :linenos:
 
     sha256:788fd6a5f6fe8c87cd7eeb84d1049bfb2f74a68c6ffa58e83ed862dbd99de7d8: 788fd6a5f6fe8c87cd7eeb84d1049bfb2f74a68c6ffa58e83ed862dbd99de7d8
@@ -220,7 +221,7 @@ Idpowiadające im foldery w ``/var/lib/docker/image/overlay2/layerdb/sha256`` to
 
 Polecenie:
 
-.. code-block:: json
+.. code-block:: console
     :linenos:
 
     echo -n "sha256:788fd6a5f6fe8c87cd7eeb84d1049bfb2f74a68c6ffa58e83ed862dbd99de7d8 sha256:684e32911114621cc2997ff125592aa8d76924cd3d38691cee0dc9b60d43bdbc" | sha256sum
