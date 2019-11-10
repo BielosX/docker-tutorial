@@ -1,0 +1,19 @@
+
+plugins {
+    id 'java'
+    id 'application'
+}
+
+sourceCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile "com.sparkjava:spark-core:2.8.0"
+}
+
+application {
+    mainClassName = 'Main'
+}
